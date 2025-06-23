@@ -16,7 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from stage_ia import views as global_views
 
 urlpatterns = [
+    path('', global_views.home, name='homepage'),
+    path("user/", include('userInfos.urls')),
     path('admin/', admin.site.urls),
 ]

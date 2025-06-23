@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Créer un Profil Utilisateur</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 50%;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        label {
+            font-size: 16px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        select, input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .button-container {
+            text-align: center;
+        }
+
+        .button-container input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .button-container input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Créer un Profil Utilisateur</h1>
+        
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div>
+                <label for="id_role">Rôle</label>
+                {{ form.role }}
+            </div>
+            
+            <div>
+                <label for="id_expertise">Expertise</label>
+                {{ form.expertise }}
+            </div>
+
+            <div>
+                <label for="id_domain">Domaine</label>
+                {{ form.domain }}
+            </div>
+
+            <div>
+                <label for="id_visual_pref">Préférences visuelles</label>
+                {{ form.visual_pref }}
+            </div>
+
+            <div class="button-container">
+                <input type="submit" value="Envoyer">
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>

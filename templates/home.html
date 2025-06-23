@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Accueil</title>
+</head>
+<body>
+    <h1>Homepage de l'app xAI</h1>
+    
+    <a href="{% url 'create_person_profile' %}">
+        <button>Créer un nouveau template d'utilisateur</button>
+    </a>
+
+    {% if profiles_without_owner %}
+    <h2>Profils sans utilisateur associé :</h2>
+        <ul>
+            {% for profile in profiles_without_owner %}
+                <li>
+                    <strong>{{ profile.get_role_display }}</strong><br>
+                    Domaine : {{ profile.get_domain_display }}<br>
+                    Préférence visuelle : {{ profile.get_visual_pref_display }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucun profil sans utilisateur associé.</p>
+    {% endif %}
+</body>
+</html>
+
