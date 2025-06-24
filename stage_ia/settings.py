@@ -32,8 +32,10 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    #ici celles que j'ai déposées manuellements
     'userInfos',
-
+    "widget_tweaks",
+    #ajoutées automatiquement par django
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

@@ -41,3 +41,31 @@ class PersonProfile(models.Model):
 
     def __str__(self):
         return f"{self.role} - {self.domain}"
+
+
+class TechnicalContext(models.Model):
+    MODEL_CHOICES = [
+        ('random_forest', 'Random Forest'),
+        ('deep_learning', 'Deep Learning'),
+        ('svm', 'SVM'),
+        ('logistic_regression', 'Logistic Regression'),
+    ]
+
+    TASK_CHOICES = [
+        ('classification', 'Classification'),
+        ('regression', 'Régression'),
+    ]
+
+    DATA_TYPE_CHOICES = [
+        ('images', 'Images'),
+        ('text', 'Texte'),
+        ('tabular', 'Tabulaires'),
+    ]
+
+    person_profile = models.OneToOneField( PersonProfile, on_delete=models.CASCADE, related_name='technical_context')
+    model_type = models.CharField(max_length=50, choices=MODEL_CHOICES)
+    task_type = models.CharField(max_length=50, choices=TASK_CHOICES)
+    data_type = models.CharField(max_length=50, choices=DATA_TYPE_CHOICES)
+
+    def __str__(self):
+        return f"Contexte technique pour {self.person_profile}"
