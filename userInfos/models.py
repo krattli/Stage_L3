@@ -11,6 +11,7 @@ class PersonProfile(models.Model):
     ROLE_CHOICES = [
         ('S', 'Étudiant'),
         ('C', 'Chercheur'),
+        ('P', 'Professeur'),
         ('D', 'Data Scientist'),
     ]
     EXPERTISE_CHOICES = [
@@ -20,8 +21,11 @@ class PersonProfile(models.Model):
     ]
     DOMAIN_CHOICES = [
         ('health', 'Santé'),
+        ('math', 'Mathématiques'),
+        ('info', 'informatique'),
         ('finance', 'Finance'),
         ('education', 'Éducation'),
+        ('secondaire', 'Éducation secondaire'),
     ]
     VISUAL_PREF_CHOICES = [
         ('graph', 'Graphes'),
@@ -52,8 +56,8 @@ class TechnicalContext(models.Model):
     ]
 
     TASK_CHOICES = [
-        ('classification', 'Classification'),
-        ('regression', 'Régression'),
+        ('C', 'Classification'),
+        ('R', 'Régression'),
     ]
 
     DATA_TYPE_CHOICES = [
