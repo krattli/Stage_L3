@@ -34,6 +34,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     #ici celles que j'ai déposées manuellements
     'userInfos',
+    'xAI_engine',
     "widget_tweaks",
     #ajoutées automatiquement par django
     'django.contrib.admin',

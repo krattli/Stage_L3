@@ -14,7 +14,7 @@ def create_person_profile(request):
             else:
                 profile.owner = None
             profile.save()
-            # on sauvegarde l'id pour le donner à la suite du formulaire
+            # on sauvegarde l'id dans la session pour le donner à la suite du formulaire
             request.session['profile_id'] = profile.id
             return redirect('technical_context')
     else:
@@ -31,8 +31,8 @@ def create_technical_context(request):
             if profile_id:
                 context.person_profile_id = profile_id
                 context.save()
-                del request.session['profile_id']
-            return redirect('/')
+                request.session['technical_context_id'] = context.id
+            return redirect('recommendation')
     else:
         form = TechnicalContextForm()
 

@@ -9,14 +9,14 @@ Un utilisateur global pourra tester les recommandations de techniques d'explicab
 class PersonProfile(models.Model):
     # champs du profil user possibles utilisés dans l'algo de reco x AI
     ROLE_CHOICES = [
-        ('student', 'Étudiant'),
-        ('researcher', 'Chercheur'),
-        ('data_scientist', 'Data Scientist'),
+        ('S', 'Étudiant'),
+        ('C', 'Chercheur'),
+        ('D', 'Data Scientist'),
     ]
     EXPERTISE_CHOICES = [
-        ('beginner', 'Débutant'),
-        ('intermediate', 'Intermédiaire'),
-        ('expert', 'Expert'),
+        ('0', 'Débutant'),
+        ('1', 'Intermédiaire'),
+        ('2', 'Expert'),
     ]
     DOMAIN_CHOICES = [
         ('health', 'Santé'),
@@ -45,10 +45,10 @@ class PersonProfile(models.Model):
 
 class TechnicalContext(models.Model):
     MODEL_CHOICES = [
-        ('random_forest', 'Random Forest'),
-        ('deep_learning', 'Deep Learning'),
+        ('RF', 'Random Forest'),
+        ('DL', 'Deep Learning'),
         ('svm', 'SVM'),
-        ('logistic_regression', 'Logistic Regression'),
+        ('LR', 'Logistic Regression'),
     ]
 
     TASK_CHOICES = [
@@ -57,9 +57,9 @@ class TechnicalContext(models.Model):
     ]
 
     DATA_TYPE_CHOICES = [
-        ('images', 'Images'),
-        ('text', 'Texte'),
-        ('tabular', 'Tabulaires'),
+        ('img', 'Images'),
+        ('txt', 'Texte'),
+        ('tab', 'Tabulaires'),
     ]
 
     person_profile = models.OneToOneField( PersonProfile, on_delete=models.CASCADE, related_name='technical_context')
