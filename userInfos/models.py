@@ -1,36 +1,67 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-"""
-Classe PersonProfile de notre app django
-elle contiendra touts les champs demandés pour faire notre app et elle est à décoreller de la classe utilisateur global
-Un utilisateur global pourra tester les recommandations de techniques d'explicabilité sur plusieurs types de profiles comme celui ci
-"""
 class PersonProfile(models.Model):
-    # champs du profil user possibles utilisés dans l'algo de reco x AI
+    """
+    Classe PersonProfile de notre app django
+    elle contiendra touts les champs demandés pour faire notre app et elle est à décoreller de la classe utilisateur global
+    Un utilisateur global pourra tester les recommandations de techniques d'explicabilité sur plusieurs types de profiles comme celui ci
+    """
+    # Pour chaque attribut auquel l'utilisateur aura des choix, django met à disposition les attributs choices
+    # C'est comme une sorte d'enum, elle prends la forme d'une liste de tuple de 2 elements
+    # Ici on a ajouté une classe dans le tuple pour plus de réutilisabilité 
+    # C'est un peu verbeux mais c'est la solution la plus efficace pour que le code soit consistant
+    class Role():
+        STUDENT = "étudiant"
+        CHERCHEUR = "chercheur"
+        PROF = "professeur"
+        DATA_SCIENTIST = "Data Scientist"
+
     ROLE_CHOICES = [
-        ('S', 'Étudiant'),
-        ('C', 'Chercheur'),
-        ('P', 'Professeur'),
-        ('D', 'Data Scientist'),
+        (Role.STUDENT, 'Étudiant'),
+        (Role.CHERCHEUR, 'Chercheur'),
+        (Role.PROF, 'Professeur'),
+        (Role.DATA_SCIENTIST, 'Data Scientist'),
     ]
+
+    class Expertise():
+        DEBUTANT = "Débutant"
+        INTERMEDIAIRE = "intermédiaire"
+        AVANCED = "avancé"
+        EXPERT = "expert"
+
     EXPERTISE_CHOICES = [
-        ('0', 'Débutant'),
-        ('1', 'Intermédiaire'),
-        ('2', 'Expert'),
+        (Expertise.DEBUTANT, 'Débutant'),
+        (Expertise.INTERMEDIAIRE, 'Intermédiaire'),
+        (Expertise.EXPERT, 'Expert'),
     ]
+
+    class Domain:
+        HEALTH = "health"
+        MATH = "math"
+        INFO = "info"
+        FINANCE = "finance"
+        EDUCATION = "education"
+        SECONDAIRE = "secondaire"
+
     DOMAIN_CHOICES = [
-        ('health', 'Santé'),
-        ('math', 'Mathématiques'),
-        ('info', 'informatique'),
-        ('finance', 'Finance'),
-        ('education', 'Éducation'),
-        ('secondaire', 'Éducation secondaire'),
+        (Domain.HEALTH, "Santé"),
+        (Domain.MATH, "Mathématiques"),
+        (Domain.INFO, "Informatique"),
+        (Domain.FINANCE, "Finance"),
+        (Domain.EDUCATION, "Éducation"),
+        (Domain.SECONDAIRE, "Éducation secondaire"),
     ]
+
+    class VisualPref:
+        GRAPH = "graph"
+        TABLE = "table"
+        TEXTE = "texte"
+
     VISUAL_PREF_CHOICES = [
-        ('graph', 'Graphes'),
-        ('table', 'Tableaux'),
-        ('text', 'Texte explicatif'),
+        (VisualPref.GRAPH, "Graphes"),
+        (VisualPref.TABLE, "Tableaux"),
+        (VisualPref.TEXTE, "Texte explicatif"),
     ]
 
     # relation oneToMany à un utilisateur global de notre app django
@@ -48,22 +79,37 @@ class PersonProfile(models.Model):
 
 
 class TechnicalContext(models.Model):
+    class ModelType:
+        RANDOM_FOREST = "RF"
+        DEEP_LEARNING = "DL"
+        SVM = "svm"
+        LOGISTIC_REGRESSION = "LR"
+
     MODEL_CHOICES = [
-        ('RF', 'Random Forest'),
-        ('DL', 'Deep Learning'),
-        ('svm', 'SVM'),
-        ('LR', 'Logistic Regression'),
+        (ModelType.RANDOM_FOREST, "Random Forest"),
+        (ModelType.DEEP_LEARNING, "Deep Learning"),
+        (ModelType.SVM, "SVM"),
+        (ModelType.LOGISTIC_REGRESSION, "Logistic Regression"),
     ]
+
+    class TaskType:
+        CLASSIFICATION = "C"
+        REGRESSION = "R"
 
     TASK_CHOICES = [
-        ('C', 'Classification'),
-        ('R', 'Régression'),
+        (TaskType.CLASSIFICATION, "Classification"),
+        (TaskType.REGRESSION, "Régression"),
     ]
 
+    class DataType:
+        IMG = "img"
+        TXT = "txt"
+        TAB = "tab"
+
     DATA_TYPE_CHOICES = [
-        ('img', 'Images'),
-        ('txt', 'Texte'),
-        ('tab', 'Tabulaires'),
+        (DataType.IMG, "Images"),
+        (DataType.TXT, "Texte"),
+        (DataType.TAB, "Tabulaires"),
     ]
 
     person_profile = models.OneToOneField( PersonProfile, on_delete=models.CASCADE, related_name='technical_context')
