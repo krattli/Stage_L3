@@ -80,16 +80,30 @@ class PersonProfile(models.Model):
 
 class TechnicalContext(models.Model):
     class ModelType:
-        RANDOM_FOREST = "RF"
-        DEEP_LEARNING = "DL"
-        SVM = "svm"
+        SVM = "SVM"
         LOGISTIC_REGRESSION = "LR"
+        DECISION_TREE = "DT"
+        K_NEAREST_NEIGHBOUR = "KNN"
+        NAIVE_BAYES = "NB"
+        RANDOM_FOREST = "RF"
+        EXTRA_TREES = "ET"
+        BAG = "BAG"
+        GRADIENT_BOOSTING = "GB"
+        MLP = "MLP"
+        DEEP_LEARNING = "DL"
 
     MODEL_CHOICES = [
-        (ModelType.RANDOM_FOREST, "Random Forest"),
-        (ModelType.DEEP_LEARNING, "Deep Learning"),
         (ModelType.SVM, "SVM"),
         (ModelType.LOGISTIC_REGRESSION, "Logistic Regression"),
+        (ModelType.DECISION_TREE, "Decision Tree"),
+        (ModelType.K_NEAREST_NEIGHBOUR, "K-Nearest Neighbour"),
+        (ModelType.NAIVE_BAYES, "Naive Bayes"),
+        (ModelType.RANDOM_FOREST, "Random Forest"),
+        (ModelType.EXTRA_TREES, "Extra Trees"),
+        (ModelType.BAG, "Bagging"),
+        (ModelType.GRADIENT_BOOSTING, "Gradient Boosting"),
+        (ModelType.MLP, "MLP"),
+        (ModelType.DEEP_LEARNING, "Deep Learning"),
     ]
 
     class TaskType:
