@@ -3,21 +3,21 @@ from django.db import models
 class Recommendation(models.Model):
 
     class Explainer:
-        # modèles utilisés dans le mémoire
+        # techniques d'explicabilités utilisés dans le mémoire
         LIME = "LIME"
         SHAP = "SHAP"
         PFI = "PFI"
         ANCHOR = "ANCHOR"
-        # autres modèles mais j'ai pas compris ce qu'ils étaient exactement
-        LOGISTIC_REGRESSION = "LOGISTIC_REGRESSION"
+        # à supprimer
+        LOGISTIC_REGRESSION = "LOGISTIC_REGRESSION" # white box
         DECISION_TREE = "DECISION_TREE"
         NAIVE_BAYES = "NAIVE_BAYES"
         # autres modèles mentionnés dans le mémoire
-        INTEGRATED_GRADIENTS = "INTEGRATED_GRADIENTS"
+        INTEGRATED_GRADIENTS = "INTEGRATED_GRADIENTS" #supprimer
         GRAD_CAM = "GRAD_CAM"
         COUNTERFACTUAL = "COUNTERFACTUAL"
         SURROGATE = "SURROGATE"
-        DEEP_LIFT = "DEEP_LIFT"
+        DEEP_LIFT = "DEEP_LIFT" # supprimer
 
     EXPLAINER_CHOICES = [
         (Explainer.LIME, 'LIME'),

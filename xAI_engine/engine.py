@@ -20,6 +20,7 @@ def recommendation_engine_rule_based(p: PersonProfile, t: TechnicalContext) -> R
         explainer_choice = Recommendation.Explainer.GRAD_CAM
         # Si l'utilisateur préfère une explication avec du texte et que l'IA fais de la classification,
         # Les règles textuelles d'ANCHOR sont surement très compréhensibles
+        # règles doivent être similaires
     elif p.visual_pref == PersonProfile.VisualPref.TEXTE and t.task_type == TechnicalContext.TaskType.CLASSIFICATION:
         explainer_choice = Recommendation.Explainer.ANCHOR
         # Si l'utilisateur préfère un format de tableau

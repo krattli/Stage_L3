@@ -78,6 +78,7 @@ class PersonProfile(models.Model):
         return f"{self.role} - {self.domain}"
 
 
+# à supprimer
 class TechnicalContext(models.Model):
     class ModelType:
         SVM = "SVM"
@@ -90,7 +91,7 @@ class TechnicalContext(models.Model):
         BAG = "BAG"
         GRADIENT_BOOSTING = "GB"
         MLP = "MLP"
-        DEEP_LEARNING = "DL"
+        DEEP_LEARNING = "DL" # pas frocément pertinent
 
     MODEL_CHOICES = [
         (ModelType.SVM, "SVM"),
