@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     #ici celles que j'ai déposées manuellements
+    'ML_Engine',
     'userInfos',
     'xAI_engine',
     "widget_tweaks",
