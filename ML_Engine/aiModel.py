@@ -1,61 +1,66 @@
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.naive_bayes import GaussianNB
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.ensemble import RandomForestClassifier, BaggingClassifier, ExtraTreesClassifier, GradientBoostingClassifier
-from sklearn.neural_network import MLPClassifier
-
-from mlModels.dataPreparation import prepData
+from .dataPreparation import prepData
+from .models import AvailableModels
 
 import os
 from django.conf import settings
 
+import matplotlib
 import matplotlib.pyplot as plt
 from sklearn.metrics import classification_report, confusion_matrix
+import seaborn as sns
+import base64
+import io
 
-BLACKBOX_MODELS = {
-    "Decision Tree": DecisionTreeClassifier(),
-    "Logistic Regression": LogisticRegression(),
-    "Naive Bayes": GaussianNB(),
-    "KNN": KNeighborsClassifier(),
-}
+def getReport(model):
+    #model = getModelByName(model_name)
+    predictions = getModelPredictions(model) # predictions[3]:y_train et predictions[4]:y_test
+    confusionMatrixImg = getConfusionMatrixImage(predictions[3], predictions[4]) 
+    report = classification_report(predictions[3], predictions[4], output_dict=True)
+    newLabels = { "0": "E+P+", "1": "E+P-", "2": "E-P+", "3": "E-P-" }
+    usefullStats = changereportLabel(report, newLabels )
+    return confusionMatrixImg, usefullStats
 
-WHITEBOX_MODELS = {
-    "Random Forest": RandomForestClassifier(),
-    "Bagging": BaggingClassifier(),
-    "Extra Trees": ExtraTreesClassifier(),
-    "Gradient Boosting": GradientBoostingClassifier(),
-    "MLP": MLPClassifier()
-}
+def getConfusionMatrixImage(y_test, y_pred):
+    matrix = confusion_matrix(y_test, y_pred)
+    matplotlib.use("Agg") # lorsqu'une image est générée avec plot(), elle est juste chargée en mémoire et pas affichée directement à l'écran
+    plt.figure(figsize=(6, 5))
+    sns.heatmap(matrix, annot=True, fmt='d', cmap='Blues')
+    plt.title("Matrice de Confusion")
+    plt.xlabel("Prédictions")
+    plt.ylabel("Vérités")
+    buf = io.BytesIO()
+    plt.tight_layout()
+    plt.savefig(buf, format='png')
+    buf.seek(0)
+    image_png = base64.b64encode(buf.read()).decode('utf-8')
+    buf.close()
+    plt.close()
+    return image_png
 
-AVAILABLE_MODELS = {**WHITEBOX_MODELS, **BLACKBOX_MODELS}
+def getModelByName(model_name):
+    print("on cherche le modèle : "+ model_name)
+    print("Available:", [m.name for m in AvailableModels.BlackboxModels])
+    try:
+        return AvailableModels.BlackboxModels[model_name].value
+    except KeyError:
+        try:
+            return AvailableModels.WhiteBoxModels[model_name].value
+        except Exception:
+            raise
 
-"""
-    Prends un String du nom de modèle et montre la matrice de confusion que ce modèle produit sur les données d'entrainement statiques
-"""
-def plotConfusionMatrix(MLmodel):
-    if MLmodel in AVAILABLE_MODELS:
-        model = AVAILABLE_MODELS[MLmodel]
-        path = os.path.join(settings.BASE_DIR, 'static', 'data', 'dataset.csv')
-        X_train, X_test, y_train, y_test = prepData(path)
-        model.fit(X_train, y_train)
-        y_pred = model.predict(X_test)
-        print("Classification Report:")
-        print(classification_report(y_test, y_pred))
-        print("Confusion Matrix:")
-        print(confusion_matrix(y_test, y_pred))
-        plt.figure(figsize=(8, 6))
-        plt.title(f"Matrice de Confusion de : {MLmodel}")
-        plt.imshow(confusion_matrix(y_test, y_pred), cmap='Blues', interpolation='nearest')
-        plt.colorbar()
-        plt.xlabel('Prédictions')
-        plt.ylabel('Réelles')
-        plt.xticks([0, 1, 2, 3], ['E+P+', 'E+P-', 'E-P+', 'E-P-'])
-        plt.yticks([0, 1, 2, 3], ['E+P+', 'E+P-', 'E-P+', 'E-P-'])
-        plt.show()
-    else:
-        print(f"Le modèle d'IA '{MLmodel}' n'est pas encore disponible. Veuillez choisir parmi les modèles suivants : {list(AVAILABLE_MODELS.keys())}")
+def getModelPredictions(model_name):
+    model = getModelByName(model_name)
+    path = os.path.join(settings.BASE_DIR, 'static', 'data', 'dataset.csv')
+    X_train, X_test, y_train, y_test = prepData(path)
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    return X_train, X_test, y_train, y_test, y_pred
 
-if __name__ == "__main__":
-    for model in AVAILABLE_MODELS.values():
-        plotConfusionMatrix(model)
+def changereportLabel(report, newLabels):
+    renamed_report = {}
+    for key, val in report.items():
+        if key in newLabels:
+            renamed_report[newLabels[key]] = val
+        else:
+            renamed_report[key] = val
+    return renamed_report
