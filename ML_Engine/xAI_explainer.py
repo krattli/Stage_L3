@@ -1,11 +1,12 @@
 from lime.lime_tabular import LimeTabularExplainer
-import shap
 from alibi.explainers import AnchorTabular
 from sklearn.inspection import permutation_importance
+import shap
 import numpy as np
+
 from .xAI_ModelTraining import getModelPredictions
 
-def getExplanation(model_name, method):
+def getExplanation(model_name:str, method:str):
     X_train, X_test, y_train, y_test, y_pred, model, feature_names = getModelPredictions(model_name)
 
     if method == "LIME":
@@ -20,12 +21,7 @@ def getExplanation(model_name, method):
         raise ValueError("Méthode XAI non supportée")
 
 def explain_with_lime(model, X_train, X_test, feature_names, class_names):
-    explainer = LimeTabularExplainer(
-        training_data=np.array(X_train),
-        feature_names=feature_names,
-        class_names=class_names,
-        mode="classification"
-    )
+    explainer = LimeTabularExplainer( training_data=np.array(X_train), feature_names=feature_names, class_names=class_names, mode="classification")
     explanation = explainer.explain_instance(X_test[0], model.predict_proba)
     return explanation.as_list()
 
