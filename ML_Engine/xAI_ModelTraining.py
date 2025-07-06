@@ -11,6 +11,14 @@ import seaborn as sns
 import base64
 import io
 
+def getModelPredictions(model_name):
+    model = getModelByName(model_name)
+    path = os.path.join(settings.BASE_DIR, 'static', 'data', 'dataset.csv')
+    X_train, X_test, y_train, y_test, features_names = prepData(path)
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    return X_train, X_test, y_train, y_test, y_pred, model, features_names
+
 def getReport(model):
     #model = getModelByName(model_name)
     predictions = getModelPredictions(model) # predictions[3]:y_train et predictions[4]:y_test
@@ -32,10 +40,10 @@ def getConfusionMatrixImage(y_test, y_pred):
     plt.tight_layout()
     plt.savefig(buf, format='png')
     buf.seek(0)
-    image_png = base64.b64encode(buf.read()).decode('utf-8')
+    confusionMatrixImg_png = base64.b64encode(buf.read()).decode('utf-8')
     buf.close()
     plt.close()
-    return image_png
+    return confusionMatrixImg_png
 
 def getModelByName(model_name):
     print("on cherche le modèle : "+ model_name)
@@ -47,14 +55,6 @@ def getModelByName(model_name):
             return AvailableModels.WhiteBoxModels[model_name].value
         except Exception:
             raise
-
-def getModelPredictions(model_name):
-    model = getModelByName(model_name)
-    path = os.path.join(settings.BASE_DIR, 'static', 'data', 'dataset.csv')
-    X_train, X_test, y_train, y_test = prepData(path)
-    model.fit(X_train, y_train)
-    y_pred = model.predict(X_test)
-    return X_train, X_test, y_train, y_test, y_pred
 
 def changereportLabel(report, newLabels):
     renamed_report = {}

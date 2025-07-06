@@ -28,7 +28,7 @@ def prepData(filepath):
     scaledFeatures = scaling(features)
     X_res, y_res = equilibrate(scaledFeatures, target)
     X_train, X_test, y_train, y_test = train_test_split(X_res, y_res, test_size=0.2, random_state=42)
-    return X_train, X_test, y_train, y_test
+    return X_train, X_test, y_train, y_test, features.columns.tolist()
 
 def dropUselessColumns(data):
     data.drop(columns=USELESS_COLUMNS, inplace=True)
