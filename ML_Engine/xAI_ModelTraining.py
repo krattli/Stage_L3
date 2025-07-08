@@ -47,8 +47,8 @@ def getConfusionMatrixImage(y_test:np.ndarray, y_pred:np.ndarray) ->str:
     return confusionMatrixImg_png
 
 def getModelByName(model_name:str) -> ModelType:
-    print("on cherche le modèle : "+ model_name)
-    print("Available:", [m.name for m in AvailableModels.BlackboxModels])
+    #print("on cherche le modèle : "+ model_name)
+    #print("Available:", [m.name for m in AvailableModels.BlackboxModels])
     try:
         return AvailableModels.BlackboxModels[model_name].value
     except KeyError:

@@ -38,12 +38,7 @@ def explain_with_anchor(model, X_train, feature_names):
 
 def explain_with_pfi(model, X_test, y_test):
     results = permutation_importance(model, X_test, y_test, n_repeats=10, random_state=0)
-    if isinstance(results, dict):
-        first_key = next(iter(results))
-        result_bunch = results[first_key]
-    else:
-        result_bunch = results
-    return result_bunch.importances_mean, result_bunch.importances_std
+    return results
 
 if __name__ == "__main__":
     print("hello world")

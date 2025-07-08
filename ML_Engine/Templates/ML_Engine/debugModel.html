@@ -16,34 +16,51 @@
         <button type="submit" class="btn btn-primary">Afficher les performances</button>
       </form>
       {% if image_base64 %}
-      <h2 class="mt-5 text-center">Matrice de confusion</h2>
-      <div class="text-center">
-        <img src="data:image/png;base64,{{ image_base64 }}" alt="Matrice de confusion" class="img-fluid border rounded shadow">
-      </div>
-      <h2 class="mt-5">Statistiques de classification</h2>
-      <div class="table-responsive">
-        <table class="table table-bordered table-striped">
-          <thead class="table-light">
-            <tr>
-              <th>Classe</th>
-              <th>Précision</th>
-              <th>Rappel</th>
-              <th>Support</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for label, metrics in report.items %}
-              {% if metrics.precision %}
+        <h2 class="mt-5 text-center">Matrice de confusion</h2>
+        <div class="text-center">
+          <img src="data:image/png;base64,{{ image_base64 }}" alt="Matrice de confusion" class="img-fluid border rounded shadow">
+        </div>
+        <h2 class="mt-5">Statistiques de classification</h2>
+        <p>Ici se tiendra des explications plus précises sur les champs Précision, Rappel, Support</p>
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped">
+            <thead class="table-light">
               <tr>
-                <td><strong>{{ label }}</strong></td>
-                <td>{{ metrics.precision|floatformat:2 }}</td>
-                <td>{{ metrics.recall|floatformat:2 }}</td>
-                <td>{{ metrics.support }}</td>
+                <th>Classe</th>
+                <th>Précision</th>
+                <th>Rappel</th>
+                <th>Support</th>
               </tr>
-              {% endif %}
-            {% endfor %}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {% for label, metrics in report.items %}
+                {% if metrics.precision %}
+                <tr>
+                  <td><strong>{{ label }}</strong></td>
+                  <td>{{ metrics.precision|floatformat:2 }}</td>
+                  <td>{{ metrics.recall|floatformat:2 }}</td>
+                  <td>{{ metrics.support }}</td>
+                </tr>
+                {% endif %}
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
+      <hr class="my-5">
+      <h2 class="text-center">Analyse explicative du modèle</h2>
+      <form method="post" class="mb-4">
+        {% csrf_token %}
+        <input type="hidden" name="modelName" value="{{ form.data.modelName }}">
+        <div class="mb-3">
+          {{ explain_form.as_p }}
+        </div>
+        <button type="submit" class="btn btn-secondary">Afficher l'explication</button>
+      </form>
+      {% if explanation %}
+      <div class="mt-4">
+        <h4>Résultat brut de la méthode d’explicabilité</h4>
+        <pre>{{ explanation|safe }}</pre>
       </div>
       {% endif %}
     </div>
