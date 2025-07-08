@@ -16,7 +16,7 @@ def create_person_profile(request):
             profile.save()
             # on sauvegarde l'id dans la session pour le donner à la suite du formulaire
             request.session['profile_id'] = profile.id
-            return redirect('technical_context')
+            return redirect('models')
     else:
         form = PersonProfileForm()
     
