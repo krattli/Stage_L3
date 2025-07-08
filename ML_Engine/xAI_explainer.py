@@ -3,6 +3,9 @@ from alibi.explainers import AnchorTabular
 from sklearn.inspection import permutation_importance
 import shap
 import numpy as np
+import matplotlib.pyplot as plt
+import base64
+import io
 
 from .xAI_ModelTraining import getModelPredictions
 
@@ -10,35 +13,101 @@ def getExplanation(model_name:str, method:str):
     X_train, X_test, y_train, y_test, y_pred, model, feature_names = getModelPredictions(model_name)
 
     if method == "LIME":
-        return explain_with_lime(model, X_train, X_test, feature_names, ["E+P+", "E+P-", "E-P+", "E-P-"])
+        raw =  explainWithLimeRaw(model, X_train, X_test, feature_names, ["E+P+", "E+P-", "E-P+", "E-P-"])
+        return explainWithLimeView(raw)
     elif method == "SHAP":
-        return explain_with_shap(model, X_train)
+        raw = explainWithShapRaw(model, X_train)
+        return explainWithShapView(raw, feature_names)
     elif method == "ANCHOR":
-        return explain_with_anchor(model, X_train, feature_names)
+        data, precision, coverage = explainWithAnchor(model, X_train, feature_names)
+        return explainWithAnchorView(data, precision, coverage)
     elif method == "PFI":
-        return explain_with_pfi(model, X_test, y_test)
+        raw = explainWithPfi(model, X_test, y_test)
+        return explainWithPfiView(raw, feature_names)
     else:
         raise ValueError("Méthode XAI non supportée")
 
-def explain_with_lime(model, X_train, X_test, feature_names, class_names):
+def explainWithLimeRaw(model, X_train, X_test, feature_names, class_names):
     explainer = LimeTabularExplainer( training_data=np.array(X_train), feature_names=feature_names, class_names=class_names, mode="classification")
     explanation = explainer.explain_instance(X_test[0], model.predict_proba)
     return explanation.as_list()
 
-def explain_with_shap(model, X_train):
+def explainWithShapRaw(model, X_train):
     explainer = shap.Explainer(model.predict, X_train)
     shap_values = explainer(X_train[:10])
     return shap_values
 
-def explain_with_anchor(model, X_train, feature_names):
+def explainWithAnchor(model, X_train, feature_names):
     explainer = AnchorTabular(predictor=model.predict, feature_names=feature_names)
     explainer.fit(X_train, disc_perc=(25, 50, 75))
     explanation = explainer.explain(X_train[0])
     return explanation.data['anchor'], explanation.data['precision'], explanation.data['coverage']
 
-def explain_with_pfi(model, X_test, y_test):
+def explainWithPfi(model, X_test, y_test):
     results = permutation_importance(model, X_test, y_test, n_repeats=10, random_state=0)
     return results
 
 if __name__ == "__main__":
     print("hello world")
+
+def explainWithLimeView(raw_result):
+    html = "<ul class='list-group'>"
+    for feature, weight in raw_result:
+        color = 'text-success' if weight >= 0 else 'text-danger'
+        html += f"<li class='list-group-item d-flex justify-content-between align-items-center'>"
+        html += f"<span>{feature}</span>"
+        html += f"<span class='{color}'><strong>{weight:.3f}</strong></span>"
+        html += "</li>"
+    html += "</ul>"
+    return html
+
+def explainWithShapView(shap_values, feature_names):
+    plt.clf()
+    shap.summary_plot(shap_values, features=shap_values.data, feature_names=feature_names, show=False)
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png', bbox_inches='tight')
+    buf.seek(0)
+    image_base64 = base64.b64encode(buf.read()).decode('utf-8')
+    buf.close()
+    html = f"""
+    <div class='text-center'>
+        <img src='data:image/png;base64,{image_base64}' class='img-fluid' alt='SHAP Summary Plot'>
+    </div>
+    """
+    return html
+
+def explainWithAnchorView(anchor, precision, coverage):
+    rule = "<p class='text-success'> ET </p>".join(anchor)
+    html = f"""
+    <div class='card'>
+      <div class='card-body'>
+        <p><strong>Règle d'ancrage :</strong> {rule}</p>
+        <p><strong>Précision :</strong> {precision:.2f}</p>
+        <p><strong>Couverture :</strong> {coverage:.2f}</p>
+      </div>
+    </div>
+    """
+    return html
+
+def explainWithPfiView(result, feature_names):
+    mean_importances = result.importances_mean
+    std_importances = result.importances_std
+    sorted_idx = np.argsort(-mean_importances)
+
+    html = """
+    <table class='table table-bordered table-striped'>
+      <thead class='table-light'>
+        <tr>
+          <th>Feature</th>
+          <th>Importance Moyenne</th>
+          <th>Écart-type</th>
+        </tr>
+      </thead>
+      <tbody>
+    """
+    for idx in sorted_idx[:10]:
+        html += f"<tr><td>{feature_names[idx]}</td><td>{mean_importances[idx]:.4f}</td><td>{std_importances[idx]:.4f}</td></tr>"
+
+    html += "</tbody></table>"
+    return html
+
