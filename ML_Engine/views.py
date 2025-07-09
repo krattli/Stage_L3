@@ -1,39 +1,37 @@
 from django.shortcuts import render
 from .forms import ModelChoiceForm
-from .xAI_ModelTraining import getReport
+from .xAI_ModelTraining import getModelPredictions, getReportFromData
 from .forms import ModelChoiceForm, ExplainabilityChoiceForm
-from .xAI_ModelTraining import getReport
 from .xAI_explainer import getExplanation
 
 def model_view(request):
     confusionMatrixImg = None
     usefullStats = None
     explanation_result = None
-    model = None
 
     if request.method == 'POST':
-        form = ModelChoiceForm(request.POST)
-        explain_form = ExplainabilityChoiceForm(request.POST)
+        modelChoiceForm = ModelChoiceForm(request.POST)
+        explainabilityChoiceForm = ExplainabilityChoiceForm(request.POST)
 
-        if form.is_valid():
-            model = form.cleaned_data['modelName']
-            confusionMatrixImg, usefullStats = getReport(model)
+        if modelChoiceForm.is_valid():
+            model = modelChoiceForm.cleaned_data['modelName']
+            X_train, X_test, y_train, y_test, y_pred, trained_model, feature_names = getModelPredictions(model)
+            confusionMatrixImg, usefullStats = getReportFromData(y_test, y_pred)
 
-            if explain_form.is_valid():
-                method = explain_form.cleaned_data['explainer']
+            if explainabilityChoiceForm.is_valid():
+                method = explainabilityChoiceForm.cleaned_data['explainer']
                 try:
-                    explanation_result = getExplanation(model, method)
+                    explanation_result = getExplanation(X_train, X_test, y_test, trained_model, feature_names, method)
                 except Exception as e:
                     explanation_result = f"Erreur pendant l'explication : {str(e)}"
     else:
-        form = ModelChoiceForm()
-        explain_form = ExplainabilityChoiceForm()
+        modelChoiceForm = ModelChoiceForm()
+        explainabilityChoiceForm = ExplainabilityChoiceForm()
 
     return render(request, 'ML_Engine/debugModel.html', {
-        'form': form,
-        'explain_form': explain_form,
+        'form': modelChoiceForm,
+        'explain_form': explainabilityChoiceForm,
         'image_base64': confusionMatrixImg,
         'report': usefullStats,
         'explanation': explanation_result
     })
-

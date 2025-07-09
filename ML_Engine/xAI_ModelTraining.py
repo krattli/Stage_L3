@@ -21,10 +21,9 @@ def getModelPredictions(model_name:str) -> Tuple[ np.ndarray, np.ndarray, np.nda
     y_pred = np.asarray(model.predict(X_test)) # Obligé de faire un cast ici pour le typage statique
     return X_train, X_test, y_train, y_test, y_pred, model, features_names
 
-def getReport(model: str) -> Tuple[str, Dict[str, Any]]:
-    predictions = getModelPredictions(model) # predictions[3]:y_train et predictions[4]:y_test
-    confusionMatrixImg = getConfusionMatrixImage(predictions[3], predictions[4]) 
-    report = cast(Dict[str,Any], classification_report(predictions[3], predictions[4], output_dict=True))
+def getReportFromData(y_test:np.ndarray, y_pred:np.ndarray) -> Tuple[str, Dict[str, Any]]:
+    confusionMatrixImg = getConfusionMatrixImage(y_test, y_pred) 
+    report = cast(Dict[str,Any], classification_report(y_test, y_pred, output_dict=True))
     newLabels = { "0": "E+P+", "1": "E+P-", "2": "E-P+", "3": "E-P-" }
     usefullStats = changereportLabel(report, newLabels )
     return confusionMatrixImg, usefullStats

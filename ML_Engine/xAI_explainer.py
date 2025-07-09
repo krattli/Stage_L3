@@ -1,16 +1,18 @@
 from lime.lime_tabular import LimeTabularExplainer
 from alibi.explainers import AnchorTabular
 from sklearn.inspection import permutation_importance
+from typing import List
 import shap
 import numpy as np
 import matplotlib.pyplot as plt
 import base64
 import io
 
-from .xAI_ModelTraining import getModelPredictions
+from ML_Engine.models import ModelType
+#from .xAI_ModelTraining import getModelPredictions
 
-def getExplanation(model_name:str, method:str):
-    X_train, X_test, y_train, y_test, y_pred, model, feature_names = getModelPredictions(model_name)
+def getExplanation(X_train:np.ndarray, X_test:np.ndarray, y_test:np.ndarray, model:ModelType, feature_names:List[str], method:str) -> str:
+    #X_train, X_test, y_train, y_test, y_pred, model, feature_names = getModelPredictions(model_name)
 
     if method == "LIME":
         raw =  explainWithLimeRaw(model, X_train, X_test, feature_names, ["E+P+", "E+P-", "E-P+", "E-P-"])
@@ -25,7 +27,7 @@ def getExplanation(model_name:str, method:str):
         raw = explainWithPfi(model, X_test, y_test)
         return explainWithPfiView(raw, feature_names)
     else:
-        raise ValueError("Méthode XAI non supportée")
+        return f"La méthode d'explicabilité {method} n'est pas encore disponible"
 
 def explainWithLimeRaw(model, X_train, X_test, feature_names, class_names):
     explainer = LimeTabularExplainer( training_data=np.array(X_train), feature_names=feature_names, class_names=class_names, mode="classification")
@@ -50,7 +52,7 @@ def explainWithPfi(model, X_test, y_test):
 if __name__ == "__main__":
     print("hello world")
 
-def explainWithLimeView(raw_result):
+def explainWithLimeView(raw_result) -> str:
     html = "<ul class='list-group'>"
     for feature, weight in raw_result:
         color = 'text-success' if weight >= 0 else 'text-danger'
@@ -61,7 +63,7 @@ def explainWithLimeView(raw_result):
     html += "</ul>"
     return html
 
-def explainWithShapView(shap_values, feature_names):
+def explainWithShapView(shap_values, feature_names) -> str:
     plt.clf()
     shap.summary_plot(shap_values, features=shap_values.data, feature_names=feature_names, show=False)
     buf = io.BytesIO()
@@ -76,7 +78,7 @@ def explainWithShapView(shap_values, feature_names):
     """
     return html
 
-def explainWithAnchorView(anchor, precision, coverage):
+def explainWithAnchorView(anchor, precision, coverage) -> str:
     rule = "<p class='text-success'> ET </p>".join(anchor)
     html = f"""
     <div class='card'>
@@ -89,7 +91,7 @@ def explainWithAnchorView(anchor, precision, coverage):
     """
     return html
 
-def explainWithPfiView(result, feature_names):
+def explainWithPfiView(result, feature_names) -> str:
     mean_importances = result.importances_mean
     std_importances = result.importances_std
     sorted_idx = np.argsort(-mean_importances)
