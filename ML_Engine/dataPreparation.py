@@ -14,7 +14,9 @@ USELESS_COLUMNS = [
     'INTERACTION_ORIENTED_INVESTMENT',
     'COURSE_ACCESS_CONNECTION_ORIENTED_INVESTMENT',
     'COURSE_ACCESS_COUNT_ORIENTED_INVESTMENT',
-    'ENGAGEMENT'
+    'ENGAGEMENT',
+    'RATING_S5Q1',
+    'RANK_S3Q1',
 ]
 
 def prepData(filepath:str) -> Tuple[ np.ndarray, np.ndarray, np.ndarray, np.ndarray, List[str]]:
