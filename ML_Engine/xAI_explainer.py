@@ -27,7 +27,7 @@ def getExplanation(X_train:np.ndarray, X_test:np.ndarray, y_test:np.ndarray, mod
         raw = explainWithPfi(model, X_test, y_test)
         return explainWithPfiView(raw, feature_names)
     else:
-        return f"La méthode d'explicabilité {method} n'est pas encore disponible"
+        return f"La méthode d'explicabilité {method} n'est pas encore disponible" # ne sera jamais atteint mais si je ne la met pas, pyright s'énerve
 
 def explainWithLimeRaw(model, X_train, X_test, feature_names, class_names):
     explainer = LimeTabularExplainer( training_data=np.array(X_train), feature_names=feature_names, class_names=class_names, mode="classification")

@@ -23,5 +23,6 @@ urlpatterns = [
     path("user/", include('userInfos.urls')),
     path("user/", include('xAI_engine.urls')),
     path("user/", include('ML_Engine.urls')),
+    path("user/", include('xAI_eval.urls')),
     path('admin/', admin.site.urls),
 ]

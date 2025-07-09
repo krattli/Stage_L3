@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from .forms import ModelChoiceForm
 from .xAI_ModelTraining import getModelPredictions, getReportFromData
 from .forms import ModelChoiceForm, ExplainabilityChoiceForm
@@ -14,6 +14,8 @@ def model_view(request):
         explainabilityChoiceForm = ExplainabilityChoiceForm(request.POST)
 
         if modelChoiceForm.is_valid():
+            if explainabilityChoiceForm.is_valid() and request.POST.get("goToEval"):
+                return redirect("eval")
             model = modelChoiceForm.cleaned_data['modelName']
             X_train, X_test, y_train, y_test, y_pred, trained_model, feature_names = getModelPredictions(model)
             confusionMatrixImg, usefullStats = getReportFromData(y_test, y_pred)

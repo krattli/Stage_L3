@@ -62,6 +62,11 @@
         <h4>Résultat brut de la méthode d’explicabilité</h4>
         {{ explanation|safe }}
       </div>
+      <form method="post" action="{% url 'eval' %}" class="mt-4 text-center">
+        {% csrf_token %}
+        <input type="hidden" name="modelName" value="{{ form.data.modelName }}">
+        <button type="submit" class="btn btn-success">Passer à l'évaluation</button>
+      </form>
       {% endif %}
     </div>
   </body>
