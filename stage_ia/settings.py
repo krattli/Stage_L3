@@ -35,7 +35,6 @@ INSTALLED_APPS = [
     #ici celles que j'ai déposées manuellements
     'ML_Engine',
     'userInfos',
-    'xAI_engine',
     'xAI_eval',
     "widget_tweaks",
     #ajoutées automatiquement par django

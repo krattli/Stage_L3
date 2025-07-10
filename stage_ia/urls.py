@@ -21,8 +21,7 @@ from stage_ia import views as global_views
 urlpatterns = [
     path('', global_views.home, name='homepage'),
     path("user/", include('userInfos.urls')),
-    path("user/", include('xAI_engine.urls')),
-    path("user/", include('ML_Engine.urls')),
     path("user/", include('xAI_eval.urls')),
+    path("user/", include('ML_Engine.urls')),
     path('admin/', admin.site.urls),
 ]

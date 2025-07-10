@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.shortcuts import render
 from .forms import PersonProfileForm
-from .forms import TechnicalContextForm
+from .engine import getRecommendation
+#from .forms import TechnicalContextForm
 
 # créé le formulaire pour créer un template utilisateur xAI
 def create_person_profile(request):
@@ -16,12 +17,16 @@ def create_person_profile(request):
             profile.save()
             # on sauvegarde l'id dans la session pour le donner à la suite du formulaire
             request.session['profile_id'] = profile.id
-            return redirect('models')
+            explicabilityMethod, aiModel  = getRecommendation(profile)
+            request.session['recommended_model'] = aiModel.value
+            request.session['recommended_xai'] = explicabilityMethod.value
+            return redirect('xAI_recommendation')
     else:
         form = PersonProfileForm()
-    
     return render(request, 'userInfos/create_profile.html', {'form': form})
 
+# Ne sert plus à rien
+"""
 def create_technical_context(request):
     if request.method == 'POST':
         form = TechnicalContextForm(request.POST)
@@ -35,5 +40,5 @@ def create_technical_context(request):
             return redirect('recommendation')
     else:
         form = TechnicalContextForm()
-
     return render(request, 'userInfos/technical_context.html', {'form': form})
+"""

@@ -1,5 +1,5 @@
 from .dataPreparation import prepData
-from .models import AvailableModels, ModelType
+from .models import AvailableModels, ModelType, MODEL_MAP
 
 import os
 from django.conf import settings
@@ -21,19 +21,19 @@ def getModelPredictions(model_name:str) -> Tuple[ np.ndarray, np.ndarray, np.nda
     y_pred = np.asarray(model.predict(X_test)) # Obligé de faire un cast ici pour le typage statique
     return X_train, X_test, y_train, y_test, y_pred, model, features_names
 
-def getReportFromData(y_test:np.ndarray, y_pred:np.ndarray) -> Tuple[str, Dict[str, Any]]:
-    confusionMatrixImg = getConfusionMatrixImage(y_test, y_pred) 
+def getReportFromData(y_test:np.ndarray, y_pred:np.ndarray, model_name:str) -> Tuple[str, Dict[str, Any]]:
+    confusionMatrixImg = getConfusionMatrixImage(y_test, y_pred, model_name) 
     report = cast(Dict[str,Any], classification_report(y_test, y_pred, output_dict=True))
     newLabels = { "0": "E+P+", "1": "E+P-", "2": "E-P+", "3": "E-P-" }
     usefullStats = changereportLabel(report, newLabels )
     return confusionMatrixImg, usefullStats
 
-def getConfusionMatrixImage(y_test:np.ndarray, y_pred:np.ndarray) ->str:
+def getConfusionMatrixImage(y_test:np.ndarray, y_pred:np.ndarray, model_name:str) ->str:
     matrix = confusion_matrix(y_test, y_pred)
     matplotlib.use("Agg") # lorsqu'une image est générée avec plot(), elle est juste chargée en mémoire et pas affichée directement à l'écran
     plt.figure(figsize=(6, 5))
     sns.heatmap(matrix, annot=True, fmt='d', cmap='Blues')
-    plt.title("Matrice de Confusion")
+    plt.title(f"Matrice de Confusion du modèle {model_name}")
     plt.xlabel("Prédictions")
     plt.ylabel("Vérités")
     buf = io.BytesIO()
@@ -49,12 +49,9 @@ def getModelByName(model_name:str) -> ModelType:
     #print("on cherche le modèle : "+ model_name)
     #print("Available:", [m.name for m in AvailableModels.BlackboxModels])
     try:
-        return AvailableModels.BlackboxModels[model_name].value
+        return MODEL_MAP[AvailableModels[model_name]]
     except KeyError:
-        try:
-            return AvailableModels.WhiteBoxModels[model_name].value
-        except Exception:
-            raise
+        raise
 
 def changereportLabel(report: Dict[str, Any], newLabels: Dict[str, str]) -> Dict[str, Any]:
     renamed_report = {}

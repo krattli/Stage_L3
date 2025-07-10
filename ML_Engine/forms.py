@@ -1,9 +1,9 @@
 from django import forms
-from .models import AvailableModels
-from xAI_engine.models import Recommendation
+from .models import MODEL_MAP
+from userInfos.models import Recommendation
 
 class ModelChoiceForm(forms.Form):
-    MODEL_CHOICES = [(m.name, m.name.replace("_", " ")) for m in list(AvailableModels.BlackboxModels) + list(AvailableModels.WhiteBoxModels)]
+    MODEL_CHOICES = [(model_enum.name, model_enum.name.replace("_", " ").title()) for model_enum in MODEL_MAP.keys()]
     modelName = forms.ChoiceField(choices=MODEL_CHOICES, label="choisissez parmis les modèles disponiobles")
 
 class ExplainabilityChoiceForm(forms.Form):

@@ -1,16 +1,30 @@
+from typing import Tuple
 from .models import Recommendation
-from userInfos.models import PersonProfile, TechnicalContext
+from userInfos.models import PersonProfile, ModelType
+from ML_Engine.models import AvailableModels
 
-def recommendation_engine(p:PersonProfile, t:TechnicalContext) -> Recommendation:
+def getRecommendation(p:PersonProfile) -> Tuple[Recommendation.Explainer, AvailableModels]:
     # On fait un double appel à cette fonction car à l'avenir on pourra écrire d'autres fonctions de recommendation
-    return recommendation_engine_rule_based(p,t)
+    return recommendation_engine_rule_based(p)
 
+def recommendation_engine_rule_based(p:PersonProfile) -> Tuple[Recommendation.Explainer, AvailableModels]:
+    explainer = Recommendation.Explainer.LIME
+    model_type = AvailableModels.EXTRA_TREES
+    if p.visual_pref == PersonProfile.VisualPref.TABLE:
+        explainer = Recommendation.Explainer.PFI
+    elif p.visual_pref == PersonProfile.VisualPref.GRAPH:
+        explainer = Recommendation.Explainer.SHAP
+    elif p.visual_pref == PersonProfile.VisualPref.TEXTE:
+        explainer = Recommendation.Explainer.ANCHOR
+    elif p.expertise == PersonProfile.Expertise.EXPERT:
+        explainer = Recommendation.Explainer.SHAP  
+    return explainer, model_type
+
+"""
 def recommendation_engine_rule_based(p: PersonProfile, t: TechnicalContext) -> Recommendation:
-    """
     Recommande une ia explicative en se basant sur des règles fixes
     liées au profil utilisateur et au contexte technique.
     Le résultat est un objet Recommendation correspondant à la méthode d'explicabilité choisie.
-    """
     explainer_choice = None
 
     # On commence par des règles spécifiques basées sur les préférences visuelles de l'utilisateur
@@ -80,12 +94,10 @@ def recommendation_engine_rule_based(p: PersonProfile, t: TechnicalContext) -> R
 
 # pas terminée
 def recommendation_engine_weighted(p: PersonProfile, t: TechnicalContext) -> Recommendation:
-    """
     Recommande une méthode d'explicabilité en attribuant et modifiant un score
     à chaque candidat en fonction du profil utilisateur et du contexte technique.
     à la fin, la méthode avec le score le plus élevé est sélectionnée.
     Retourne l'objet Recommendation correspondant à cette méthode.
-    """
 
     scores = {explainer: 0 for explainer, _ in Recommendation.EXPLAINER_CHOICES}
 
@@ -100,3 +112,4 @@ def recommendation_engine_weighted(p: PersonProfile, t: TechnicalContext) -> Rec
         scores[Recommendation.Explainer.GRAD_CAM] += 3   # Grad-CAM est très adapté aux données type images avec les heatmaps qu'elle donne
         scores[Recommendation.Explainer.INTEGRATED_GRADIENTS] += 2  # Integrated Gradients utile pour images lorsqu'il y a des réseaux de neurones impliqués
     return Recommendation.objects.create(explainer=None)
+"""
