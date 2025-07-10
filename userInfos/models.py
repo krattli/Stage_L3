@@ -1,3 +1,4 @@
+from enum import Enum
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -77,21 +78,49 @@ class PersonProfile(models.Model):
     def __str__(self):
         return f"{self.role} - {self.domain}"
 
+# Attention, il existe une autre classe qui définit les modèles disponibles
+class ModelType(Enum):
+    LOGISTIC_REGRESSION = "LOGISTIC_REGRESSION"
+    DECISION_TREE = "DECISION_TREE"
+    K_NEAREST_NEIGHBOUR = "KNN"
+    NAIVE_BAYES = "NAIVE_BAYES"
+    RANDOM_FOREST = "RANDOM_FOREST"
+    EXTRA_TREES = "EXTRA_TREES"
+    BAGGING = "BAGGING"
+    GRADIENT_BOOSTING = "GRADIENT_BOOSTING"
+    MLP = "MLP"
+    DL = "MLP"
+
+class Recommendation(models.Model):
+
+    class Explainer(Enum):
+        LIME = "LIME"
+        SHAP = "SHAP"
+        PFI = "PFI"
+        ANCHOR = "ANCHOR"
+        # on verra si on fais les suivants
+        # GRAD_CAM = "GRAD_CAM" # innutile dans ce contexte
+        # COUNTERFACTUAL = "COUNTERFACTUAL"
+        # SURROGATE = "SURROGATE"
+
+    EXPLAINER_CHOICES = [
+        (Explainer.LIME, 'LIME'),
+        (Explainer.SHAP, 'SHAP'),
+        (Explainer.PFI, 'Permutation Feature Importance (PFI)'),
+        (Explainer.ANCHOR, 'Anchor'),
+        # (Explainer.GRAD_CAM, 'Grad-CAM'),
+        # (Explainer.COUNTERFACTUAL, 'CounterFactual Explainations'),
+        # (Explainer.SURROGATE, 'Surrogate Models'),
+    ]
+
+    explainer = models.CharField(max_length=30, choices=EXPLAINER_CHOICES)
+
+    def __str__(self):
+        return f"{self.explainer}"
 
 # à supprimer
+"""
 class TechnicalContext(models.Model):
-    class ModelType:
-        SVM = "SVM"
-        LOGISTIC_REGRESSION = "LR"
-        DECISION_TREE = "DT"
-        K_NEAREST_NEIGHBOUR = "KNN"
-        NAIVE_BAYES = "NB"
-        RANDOM_FOREST = "RF"
-        EXTRA_TREES = "ET"
-        BAG = "BAG"
-        GRADIENT_BOOSTING = "GB"
-        MLP = "MLP"
-        DEEP_LEARNING = "DL" # pas frocément pertinent
 
     MODEL_CHOICES = [
         (ModelType.SVM, "SVM"),
@@ -134,3 +163,4 @@ class TechnicalContext(models.Model):
 
     def __str__(self):
         return f"Contexte technique pour {self.person_profile}"
+"""

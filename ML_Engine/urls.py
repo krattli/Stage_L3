@@ -1,6 +1,7 @@
 from django.urls import path
-from .views import model_view
+from .views import modelDebugController, xAIrecommendationController
 
 urlpatterns = [
-    path('models/', model_view, name='models'),
+    path('models_debug/', modelDebugController, name='model_debug'),
+    path('xAI_recommendation', xAIrecommendationController, name='xAI_recommendation'),
 ]

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8">
+    <title>Comparer un modèle IA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  </head>
+  <body class="bg-light">
+    <div class="container my-5">
+      <h1 class="mb-4 text-center">performances du modèle d'IA</h1>
+      <form method="post" class="mb-4">
+        {% csrf_token %}
+        <div class="mb-3">
+          {{ form.as_p }}
+        </div>
+        <button type="submit" class="btn btn-primary">Afficher les performances</button>
+      </form>
+
+      {% if image_base64 %}
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12 col-lg-6 order-lg-1">
+            <h2 class="text-center">Matrice de confusion</h2>
+            <div class="text-center">
+              <img src="data:image/png;base64,{{ image_base64 }}" alt="Matrice de confusion" class="img-fluid border rounded shadow" style="max-height: 400px; width: auto;">
+            </div>
+          </div>
+          <div class="col-12 col-lg-6 order-lg-2">
+            <h2 class="mt-3 mt-lg-0 text-center text-lg-start">Statistiques de classification</h2>
+            <p>Ici se tiendra des explications plus précises sur les champs Précision, Rappel, Support</p>
+            <div class="table-responsive">
+              <table class="table table-bordered table-striped">
+                <thead class="table-light">
+                  <tr>
+                    <th>Classe</th>
+                    <th>Précision</th>
+                    <th>Rappel</th>
+                    <th>Support</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for label, metrics in report.items %}
+                  {% if metrics.precision %}
+                  <tr>
+                    <td><strong>{{ label }}</strong></td>
+                    <td>{{ metrics.precision|floatformat:2 }}</td>
+                    <td>{{ metrics.recall|floatformat:2 }}</td>
+                    <td>{{ metrics.support }}</td>
+                  </tr>
+                  {% endif %}
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <hr class="my-5">
+      <h2 class="text-center">Analyse explicative du modèle</h2>
+      <form method="post" class="mb-4">
+        {% csrf_token %}
+        <input type="hidden" name="modelName" value="{{ form.data.modelName }}">
+        <div class="mb-3">
+          {{ explain_form.as_p }}
+        </div>
+        <button type="submit" class="btn btn-secondary">Afficher l'explication</button>
+      </form>
+      {% if explanation %}
+      <div class="mt-4">
+        <h4>Résultat brut de la méthode d’explicabilité</h4>
+        {{ explanation|safe }}
+      </div>
+      <form method="post" action="{% url 'eval' %}" class="mt-4 text-center">
+        {% csrf_token %}
+        <input type="hidden" name="modelName" value="{{ form.data.modelName }}">
+      </form>
+      {% endif %}
+    </div>
+  </body>
+</html>
+

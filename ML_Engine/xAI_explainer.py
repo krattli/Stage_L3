@@ -9,11 +9,8 @@ import base64
 import io
 
 from ML_Engine.models import ModelType
-#from .xAI_ModelTraining import getModelPredictions
 
-def getExplanation(X_train:np.ndarray, X_test:np.ndarray, y_test:np.ndarray, model:ModelType, feature_names:List[str], method:str) -> str:
-    #X_train, X_test, y_train, y_test, y_pred, model, feature_names = getModelPredictions(model_name)
-
+def getExplanationHTML(X_train:np.ndarray, X_test:np.ndarray, y_test:np.ndarray, model:ModelType, feature_names:List[str], method:str) -> str:
     if method == "LIME":
         raw =  explainWithLimeRaw(model, X_train, X_test, feature_names, ["E+P+", "E+P-", "E-P+", "E-P-"])
         return explainWithLimeView(raw)
