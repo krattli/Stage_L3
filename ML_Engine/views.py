@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from .forms import ModelChoiceForm
 from .xAI_ModelTraining import getModelPredictions, getReportFromData
 from .forms import ModelChoiceForm, ExplainabilityChoiceForm
-from .xAI_explainer import getExplanationHTML
+from .xAI_explainer import getExplanationHtmlAndJson
 
 def xAIrecommendationController(request):
     if request.POST.get("goToEval"):
@@ -12,11 +12,11 @@ def xAIrecommendationController(request):
     X_train, X_test, y_train, y_test, y_pred, trained_model, feature_names = getModelPredictions(model_name)
     confusionMatrixImg, usefullStats = getReportFromData(y_test, y_pred, model_name)
     class_names = ["E+P+", "E+P-", "E-P+", "E-P-"]
-    explanation_html = getExplanationHTML(X_train, X_test, y_test, trained_model, feature_names, class_names, xai_method)
+    explanation = getExplanationHtmlAndJson(X_train, X_test, y_test, trained_model, feature_names, class_names, xai_method)
     return render(request, 'explainerRecommendation.html', {
         'image_base64': confusionMatrixImg,
         'report': usefullStats,
-        'explanation': explanation_html
+        'explanation': explanation.html
     })
 
 def modelDebugController(request):
@@ -38,7 +38,7 @@ def modelDebugController(request):
             if explainabilityChoiceForm.is_valid():
                 class_names = ["E+P+", "E+P-", "E-P+", "E-P-"]
                 xai_method = explainabilityChoiceForm.cleaned_data['explainer']
-                explanation_html = getExplanationHTML(X_train, X_test, y_test, trained_model, feature_names, class_names, xai_method)
+                explanation_html = getExplanationHtmlAndJson(X_train, X_test, y_test, trained_model, feature_names, class_names, xai_method).json_data
     else:
         modelChoiceForm = ModelChoiceForm()
         explainabilityChoiceForm = ExplainabilityChoiceForm()
