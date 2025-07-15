@@ -11,7 +11,8 @@ def xAIrecommendationController(request):
     xai_method = request.session.get('recommended_xai')
     X_train, X_test, y_train, y_test, y_pred, trained_model, feature_names = getModelPredictions(model_name)
     confusionMatrixImg, usefullStats = getReportFromData(y_test, y_pred, model_name)
-    explanation_html = getExplanationHTML(X_train, X_test, y_test, trained_model, feature_names, xai_method)
+    class_names = ["E+P+", "E+P-", "E-P+", "E-P-"]
+    explanation_html = getExplanationHTML(X_train, X_test, y_test, trained_model, feature_names, class_names, xai_method)
     return render(request, 'explainerRecommendation.html', {
         'image_base64': confusionMatrixImg,
         'report': usefullStats,
@@ -35,8 +36,9 @@ def modelDebugController(request):
             confusionMatrixImg, usefullStats = getReportFromData(y_test, y_pred, model_name)
 
             if explainabilityChoiceForm.is_valid():
-                method = explainabilityChoiceForm.cleaned_data['explainer']
-                explanation_html = getExplanationHTML(X_train, X_test, y_test, trained_model, feature_names, method)
+                class_names = ["E+P+", "E+P-", "E-P+", "E-P-"]
+                xai_method = explainabilityChoiceForm.cleaned_data['explainer']
+                explanation_html = getExplanationHTML(X_train, X_test, y_test, trained_model, feature_names, class_names, xai_method)
     else:
         modelChoiceForm = ModelChoiceForm()
         explainabilityChoiceForm = ExplainabilityChoiceForm()
