@@ -38,7 +38,7 @@ def modelDebugController(request):
             if explainabilityChoiceForm.is_valid():
                 class_names = ["E+P+", "E+P-", "E-P+", "E-P-"]
                 xai_method = explainabilityChoiceForm.cleaned_data['explainer']
-                explanation_html = getExplanationHtmlAndJson(X_train, X_test, y_test, trained_model, feature_names, class_names, xai_method).json_data
+                explanation_html = getExplanationHtmlAndJson(X_train, X_test, y_test, trained_model, feature_names, class_names, xai_method).html
     else:
         modelChoiceForm = ModelChoiceForm()
         explainabilityChoiceForm = ExplainabilityChoiceForm()

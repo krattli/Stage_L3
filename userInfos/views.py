@@ -23,7 +23,7 @@ def create_person_profile(request):
             return redirect('xAI_recommendation')
     else:
         form = PersonProfileForm()
-    return render(request, 'userInfos/create_profile.html', {'form': form})
+    return render(request, 'create_profile.html', {'form': form})
 
 # Ne sert plus à rien
 """
